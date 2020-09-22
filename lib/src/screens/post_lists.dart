@@ -1,30 +1,32 @@
 import 'package:caching_api/src/http_services/http_services.dart';
+import 'package:caching_api/src/models/post_model.dart';
 import 'package:caching_api/src/models/user_model.dart';
 import 'package:caching_api/src/utils/appBar_gradient.dart';
-import 'package:caching_api/src/widgets/user_card.dart';
+import 'package:caching_api/src/widgets/post_list_card.dart';
 import 'package:flutter/material.dart';
 
-class Home extends StatelessWidget {
+class PostList extends StatelessWidget {
+  final User user;
+  PostList({@required this.user});
+
+  final HttpService httpService = HttpService();
   @override
   Widget build(BuildContext context) {
-    HttpService httpService = HttpService();
-
-    return Scaffold(
+    return  Scaffold(
       appBar: AppBar(
-        title: Text("Users"),
+        title: Text("${user.username}'s Posts"),
         centerTitle: true,
         flexibleSpace: appBarGradient(),
       ),
-      body:  FutureBuilder(
-        future: httpService.fetchUsers(),
-        builder: (BuildContext context, AsyncSnapshot<List<User>> snapshot) {
+      body: FutureBuilder(
+        future: httpService.fetchPosts(user),
+        builder: (BuildContext context, AsyncSnapshot<List<Post>> snapshot) {
           if (snapshot.hasData) {
-            List<User> users = snapshot.data;
+            List<Post> posts = snapshot.data;
             return ListView(
-              children: users
+              children: posts
                   .map(
-                    (User user) => UserCard(
-                  user: user,),
+                    (Post post) => PostListCard(user, post),
               )
                   .toList(),
             );
